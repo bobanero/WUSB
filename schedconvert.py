@@ -1,16 +1,23 @@
 #!/usr/bin/python
 
+# schedconvert.py - Convert schedule information copy/pasted from WUSB website
+# to a schedlinks.csv file suitable for feeding into the archivespin.py program
+# on the WUSB stream/archive server
+# 
+# Input - website-schedule.txt - This file is manually created by going to 
+# the http://wusb.fm/admin/settings/station/schedlinks (login as an admin
+# required) and copy/pasting each day's schedule links into a text file,
+# then inserting a space before the "http" and deleting the blank lines
+# 
+# Output - new-schedlink.csv - This file has the start/end times for each 
+# archive segment properly encoded as "minutes since midnight on Sunday",
+# and also has the file name for the web link changed to follow the new name
+# format - nddd-hhmm.mp3, where 'n' is the day of week (Sunday is 7, Monday
+# through Saturday are 1 through 6), 'ddd' is the abbreviation of the day of 
+# week (Sun, Mon, Tue, Wed, Thu, Fri, Sat), and hhmm is the time of the start
+# of the archive segment.
+
 import time,sys,os,string
-
-# Return a list of two items: the number of minutes into the week RIGHT NOW,
-# and the number of seconds past the minute RIGHT NOW
-
-def GetCurrentMinutes():
-
-  curtime = time.localtime()
-  weekday = (curtime.tm_wday + 1) % 7
-  curmin = (weekday * 1440) + (curtime.tm_hour * 60) + curtime.tm_min
-  return [ curmin, curtime.tm_sec ]
 
 # Take a string that is a time and a day of the week and return
 # the number of minutes since midnight on Sunday morning 
