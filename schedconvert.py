@@ -43,10 +43,11 @@ def TimeToMin(intime, WeekDay):
     minutes = 0
   WeekInt = int(WeekDay) % 7
   minInWeek = (WeekInt * 1440) + (hours * 60) + minutes
-  timeString = "0" + str((hours * 100) + minutes)
+  timeString = "0000" + str((hours * 100) + minutes)
   # return [ minInWeek, hours[-2] + timeString[-4] ] 
   return [ minInWeek, timeString[-4:] ] 
 
+# Convert input to a string and put double quotes around it
 def aQ(qstring):
     return '"' + str(qstring) + '"'
 
@@ -72,8 +73,14 @@ while(1):
     timerange = linetok[0].split('-')
     rangeBegin = timerange[0]
     rangeBeginMin = TimeToMin(rangeBegin, dayOfWeek[0])
+    # There's an edge case where the end of the range is midnight (12am),
+    # but the day of week is associated with the previous day, so we'll 
+    # need to increment day of week in that particular case.
     rangeEnd = timerange[1]
-    rangeEndMin = TimeToMin(rangeEnd, dayOfWeek[0])
+    endDay = int(dayOfWeek[0])
+    if rangeEnd == "12am":
+      endDay += 1
+    rangeEndMin = TimeToMin(rangeEnd, endDay)
     # print "Range begin is %s" % rangeBeginMin
     # print "Range end is %s" % rangeEndMin
     nextline = aQ(seq) + ';' + aQ(rangeBeginMin[0]) + ';' + aQ(rangeEndMin[0]) + ';' + \
